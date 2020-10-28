@@ -8,8 +8,15 @@ interface FormProps {
 export const Title = styled.h1`
   font-size: 48px;
   color: #3a3a3a;
-  max-width: 150px;
+  max-width: 400px;
   line-height: 56px;
+
+  margin-top: 80px;
+`;
+
+export const SubTitle = styled.h2`
+  font-size: 32px;
+  color: #3a3a3a;
 
   margin-top: 80px;
 `;
@@ -62,8 +69,8 @@ export const Error = styled.span`
   margin-top: 8px;
 `;
 
-export const Repositories = styled.div`
-  margin-top: 80px;
+export const ItemsList = styled.div`
+  margin-top: 16px;
   max-width: 700px;
 
   a {

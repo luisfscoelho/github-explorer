@@ -1,9 +1,9 @@
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, useCallback, FormEvent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronRight } from 'react-icons/fi';
 import api from '../../services/api';
 
-import { Title, Form, Repositories, Error } from './styles';
+import { Title, SubTitle, Form, ItemsList, Error } from './styles';
 
 import logoIMG from '../../assets/logo.svg';
 
@@ -16,8 +16,16 @@ interface Repository {
   };
 }
 
+interface User {
+  name: string;
+  login: string;
+  avatar_url: string;
+  bio: string;
+  location: string;
+}
+
 const Dashboard: React.FC = () => {
-  const [newRepo, setNewRepo] = useState('');
+  const [newItem, setNewItem] = useState('');
   const [inputError, setInputError] = useState('');
 
   const [repositories, setRepositories] = useState<Repository[]>(() => {
@@ -32,6 +40,16 @@ const Dashboard: React.FC = () => {
     return [];
   });
 
+  const [users, setUsers] = useState<User[]>(() => {
+    const storagedUsers = localStorage.getItem('@GithubExplorer:users');
+
+    if (storagedUsers) {
+      return JSON.parse(storagedUsers);
+    }
+
+    return [];
+  });
+
   useEffect(() => {
     localStorage.setItem(
       '@GithubExplorer:repositories',
@@ -39,46 +57,89 @@ const Dashboard: React.FC = () => {
     );
   }, [repositories]);
 
-  async function handleAddRepository(
-    event: FormEvent<HTMLFormElement>,
-  ): Promise<void> {
-    event.preventDefault();
+  useEffect(() => {
+    localStorage.setItem('@GithubExplorer:users', JSON.stringify(users));
+  }, [users]);
 
-    if (!newRepo) {
-      setInputError('Digite o autor/nome do repositório');
-      return;
-    }
-
+  const addRepository = useCallback(async (): Promise<void> => {
     try {
-      const response = await api.get<Repository>(`repos/${newRepo}`);
+      const response = await api.get<Repository>(`repos/${newItem}`);
 
       const repository = response.data;
 
       setRepositories([...repositories, repository]);
-      setNewRepo('');
+      setNewItem('');
       setInputError('');
     } catch (error) {
       setInputError('Erro na busca por esse repositório');
     }
-  }
+  }, [newItem, repositories, setRepositories, setNewItem, setInputError]);
+
+  const addUser = useCallback(async (): Promise<void> => {
+    try {
+      const response = await api.get<User>(`users/${newItem}`);
+
+      const user = response.data;
+
+      setUsers([...users, user]);
+      setNewItem('');
+      setInputError('');
+    } catch (error) {
+      setInputError('Erro na busca por esse usuário');
+    }
+  }, [newItem, users, setUsers, setNewItem, setInputError]);
+
+  const handleAdd = useCallback(
+    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+      event.preventDefault();
+
+      if (!newItem) {
+        setInputError('Digite o autor ou autor/nome do repositório');
+        return;
+      }
+
+      if (newItem.includes('/')) {
+        addRepository();
+      } else {
+        addUser();
+      }
+    },
+    [newItem, addRepository, addUser],
+  );
 
   return (
     <>
       <img src={logoIMG} alt="Github Explorer" />
-      <Title>Explore repositórios no Github</Title>
+      <Title>Explore usuários e repositórios no Github</Title>
 
-      <Form hasError={!!inputError} onSubmit={handleAddRepository}>
+      <Form hasError={!!inputError} onSubmit={handleAdd}>
         <input
-          value={newRepo}
-          onChange={e => setNewRepo(e.target.value)}
-          placeholder="Digite o nome do repositório"
+          value={newItem}
+          onChange={e => setNewItem(e.target.value)}
+          placeholder="Digite o nome do usuário o repositório"
         />
         <button type="submit">Pesquisar</button>
       </Form>
 
       {inputError && <Error>{inputError}</Error>}
 
-      <Repositories>
+      <SubTitle>Usuários</SubTitle>
+      <ItemsList>
+        {users.map(user => (
+          <Link key={user.login} to={`/user/${user.login}`}>
+            <img src={user.avatar_url} alt={user.login} />
+            <div>
+              <strong>{user.name}</strong>
+              <p>{user.bio}</p>
+            </div>
+
+            <FiChevronRight size={20} />
+          </Link>
+        ))}
+      </ItemsList>
+
+      <SubTitle>Repositórios</SubTitle>
+      <ItemsList>
         {repositories.map(repository => (
           <Link
             key={repository.full_name}
@@ -96,7 +157,7 @@ const Dashboard: React.FC = () => {
             <FiChevronRight size={20} />
           </Link>
         ))}
-      </Repositories>
+      </ItemsList>
     </>
   );
 };
