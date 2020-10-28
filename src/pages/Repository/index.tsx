@@ -3,7 +3,7 @@ import { useRouteMatch, Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 import api from '../../services/api';
-import { Header, RepositoryInfo, Issues } from './styles';
+import { Header, RepositoryInfo, Issues, SubTitle } from './styles';
 
 import logoIMG from '../../assets/logo.svg';
 
@@ -86,6 +86,7 @@ const Repository: React.FC = () => {
         </RepositoryInfo>
       )}
 
+      <SubTitle>Issues</SubTitle>
       <Issues>
         {issues.map(issue => (
           <a key={issue.id} href={issue.html_url}>

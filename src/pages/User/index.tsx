@@ -4,7 +4,8 @@ import { FiChevronLeft, FiTwitter } from 'react-icons/fi';
 import { GoMail, GoGlobe, GoLocation } from 'react-icons/go';
 
 import api from '../../services/api';
-import { Header, UserInfo, About } from './styles';
+import { Header, UserInfo, About, SubTitle } from './styles';
+import ReposList from '../../components/ReposList';
 
 import logoIMG from '../../assets/logo.svg';
 
@@ -26,13 +27,24 @@ interface User {
   following: number;
 }
 
+interface Repository {
+  name: string;
+  full_name: string;
+  description: string;
+}
+
 const User: React.FC = () => {
   const { params } = useRouteMatch<UserParams>();
   const [user, setUser] = useState<User | null>(null);
+  const [repositories, setRepositories] = useState<Repository[]>([]);
 
   useEffect(() => {
     api.get(`users/${params.user}`).then(response => {
       setUser(response.data);
+    });
+
+    api.get(`users/${params.user}/repos`).then(response => {
+      setRepositories(response.data);
     });
   }, [params.user]);
 
@@ -101,6 +113,9 @@ const User: React.FC = () => {
           </ul>
         </UserInfo>
       )}
+
+      <SubTitle>Repositórios</SubTitle>
+      {repositories && <ReposList repositories={repositories} />}
     </>
   );
 };

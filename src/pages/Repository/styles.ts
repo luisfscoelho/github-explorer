@@ -22,6 +22,13 @@ export const Header = styled.header`
   }
 `;
 
+export const SubTitle = styled.h2`
+  font-size: 32px;
+  color: #3a3a3a;
+
+  margin-top: 80px;
+`;
+
 export const RepositoryInfo = styled.section`
   margin-top: 80px;
 
@@ -77,7 +84,7 @@ export const RepositoryInfo = styled.section`
 `;
 
 export const Issues = styled.div`
-  margin-top: 80px;
+  margin-top: 16px;
 
   a {
     background: #fff;

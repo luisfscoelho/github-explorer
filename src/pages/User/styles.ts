@@ -22,6 +22,13 @@ export const Header = styled.header`
   }
 `;
 
+export const SubTitle = styled.h2`
+  font-size: 32px;
+  color: #3a3a3a;
+
+  margin-top: 80px;
+`;
+
 export const UserInfo = styled.section`
   margin-top: 80px;
   display: flex;

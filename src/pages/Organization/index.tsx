@@ -4,7 +4,8 @@ import { FiChevronLeft } from 'react-icons/fi';
 import { GoGlobe, GoLocation } from 'react-icons/go';
 
 import api from '../../services/api';
-import { Header, UserInfo, About } from './styles';
+import { Header, UserInfo, About, SubTitle } from './styles';
+import ReposList from '../../components/ReposList';
 
 import logoIMG from '../../assets/logo.svg';
 
@@ -21,13 +22,24 @@ interface User {
   blog: string;
 }
 
+interface Repository {
+  name: string;
+  full_name: string;
+  description: string;
+}
+
 const User: React.FC = () => {
   const { params } = useRouteMatch<UserParams>();
   const [organization, setOrganization] = useState<User | null>(null);
+  const [repositories, setRepositories] = useState<Repository[]>([]);
 
   useEffect(() => {
     api.get(`orgs/${params.org}`).then(response => {
       setOrganization(response.data);
+    });
+
+    api.get(`orgs/${params.org}/repos`).then(response => {
+      setRepositories(response.data);
     });
   }, [params.org]);
 
@@ -68,6 +80,9 @@ const User: React.FC = () => {
           </About>
         </UserInfo>
       )}
+
+      <SubTitle>Repositórios</SubTitle>
+      {repositories && <ReposList repositories={repositories} />}
     </>
   );
 };
