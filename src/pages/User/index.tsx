@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteMatch, Link } from 'react-router-dom';
-import { FiChevronLeft, FiTwitter } from 'react-icons/fi';
+import { useRouteMatch } from 'react-router-dom';
+import { FiTwitter } from 'react-icons/fi';
 import { GoMail, GoGlobe, GoLocation } from 'react-icons/go';
 
 import api from '../../services/api';
-import { Header, UserInfo, About, SubTitle } from './styles';
+import { UserInfo, About, SubTitle } from './styles';
+import Header from '../../components/Header';
 import ReposList from '../../components/ReposList';
-
-import logoIMG from '../../assets/logo.svg';
 
 interface UserParams {
   user: string;
@@ -50,13 +49,7 @@ const User: React.FC = () => {
 
   return (
     <>
-      <Header>
-        <img src={logoIMG} alt="Github Explorer" />
-        <Link to="/">
-          <FiChevronLeft size={16} />
-          voltar
-        </Link>
-      </Header>
+      <Header />
 
       {user && (
         <UserInfo>

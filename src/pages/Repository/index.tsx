@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteMatch, Link } from 'react-router-dom';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { useRouteMatch } from 'react-router-dom';
+import { FiChevronRight } from 'react-icons/fi';
 
 import api from '../../services/api';
-import { Header, RepositoryInfo, Issues, SubTitle } from './styles';
-
-import logoIMG from '../../assets/logo.svg';
+import { RepositoryInfo, Issues, SubTitle } from './styles';
+import Header from '../../components/Header';
 
 interface RepositoryParams {
   repository: string;
@@ -49,13 +48,7 @@ const Repository: React.FC = () => {
 
   return (
     <>
-      <Header>
-        <img src={logoIMG} alt="Github Explorer" />
-        <Link to="/">
-          <FiChevronLeft size={16} />
-          voltar
-        </Link>
-      </Header>
+      <Header />
 
       {repository && (
         <RepositoryInfo>
