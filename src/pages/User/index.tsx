@@ -28,11 +28,11 @@ interface User {
 
 const User: React.FC = () => {
   const { params } = useRouteMatch<UserParams>();
-  const [user, setuser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     api.get(`users/${params.user}`).then(response => {
-      setuser(response.data);
+      setUser(response.data);
     });
   }, [params.user]);
 

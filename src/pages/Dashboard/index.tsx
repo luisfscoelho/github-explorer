@@ -21,7 +21,7 @@ interface User {
   login: string;
   avatar_url: string;
   bio: string;
-  location: string;
+  type: string;
 }
 
 const Dashboard: React.FC = () => {
@@ -50,6 +50,18 @@ const Dashboard: React.FC = () => {
     return [];
   });
 
+  const [organizations, setOrganizations] = useState<User[]>(() => {
+    const storagedOrganizations = localStorage.getItem(
+      '@GithubExplorer:organizations',
+    );
+
+    if (storagedOrganizations) {
+      return JSON.parse(storagedOrganizations);
+    }
+
+    return [];
+  });
+
   useEffect(() => {
     localStorage.setItem(
       '@GithubExplorer:repositories',
@@ -60,6 +72,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('@GithubExplorer:users', JSON.stringify(users));
   }, [users]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      '@GithubExplorer:organizations',
+      JSON.stringify(organizations),
+    );
+  }, [organizations]);
 
   const addRepository = useCallback(async (): Promise<void> => {
     try {
@@ -81,20 +100,36 @@ const Dashboard: React.FC = () => {
 
       const user = response.data;
 
-      setUsers([...users, user]);
-      setNewItem('');
-      setInputError('');
+      if (user.type === 'Organization') {
+        setOrganizations([...organizations, user]);
+        setNewItem('');
+        setInputError('');
+      } else {
+        setUsers([...users, user]);
+        setNewItem('');
+        setInputError('');
+      }
     } catch (error) {
       setInputError('Erro na busca por esse usuário');
     }
-  }, [newItem, users, setUsers, setNewItem, setInputError]);
+  }, [
+    newItem,
+    users,
+    organizations,
+    setUsers,
+    setOrganizations,
+    setNewItem,
+    setInputError,
+  ]);
 
   const handleAdd = useCallback(
     async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault();
 
       if (!newItem) {
-        setInputError('Digite o autor ou autor/nome do repositório');
+        setInputError(
+          'Digite o autor, organização ou autor/nome do repositório',
+        );
         return;
       }
 
@@ -110,7 +145,7 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <img src={logoIMG} alt="Github Explorer" />
-      <Title>Explore usuários e repositórios no Github</Title>
+      <Title>Explore usuários, organizações e repositórios no Github</Title>
 
       <Form hasError={!!inputError} onSubmit={handleAdd}>
         <input
@@ -131,6 +166,21 @@ const Dashboard: React.FC = () => {
             <div>
               <strong>{user.name}</strong>
               <p>{user.bio}</p>
+            </div>
+
+            <FiChevronRight size={20} />
+          </Link>
+        ))}
+      </ItemsList>
+
+      <SubTitle>Organizações</SubTitle>
+      <ItemsList>
+        {organizations.map(org => (
+          <Link key={org.login} to={`/organization/${org.login}`}>
+            <img src={org.avatar_url} alt={org.login} />
+            <div>
+              <strong>{org.name}</strong>
+              <p>{org.bio}</p>
             </div>
 
             <FiChevronRight size={20} />
