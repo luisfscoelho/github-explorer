@@ -10,7 +10,7 @@ Clone the repository
 
 Install the dependencies
 
-`yarn add`
+`yarn`
 
 
 Start the application
